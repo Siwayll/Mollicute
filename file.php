@@ -2,10 +2,8 @@
 /**
  * Fichier aspiré
  *
- * @package    Tyrebot
- * @subpackage Core
- * @author     Adrien <aimbert@solire.fr>
- * @license    Solire http://www.solire.fr/
+ * @author  Siwaÿll <sanath.labs@gmail.com>
+ * @license CC by-nc http://creativecommons.org/licenses/by-nc/3.0/fr/
  */
 
 namespace Siwayll\Mollicute;
@@ -13,10 +11,8 @@ namespace Siwayll\Mollicute;
 /**
  * Fichier aspiré
  *
- * @package    Tyrebot
- * @subpackage Core
- * @author     Adrien <aimbert@solire.fr>
- * @license    Solire http://www.solire.fr/
+ * @author  Siwaÿll <sanath.labs@gmail.com>
+ * @license CC by-nc http://creativecommons.org/licenses/by-nc/3.0/fr/
  */
 class File
 {
@@ -294,7 +290,7 @@ class File
     /**
      * Désactive le contrôle spécifique au site
      *
-     * @return
+     * @return self
      */
     public function disableSiteControl()
     {

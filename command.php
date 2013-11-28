@@ -12,16 +12,32 @@ use Siwayll\Mollicute\Exception;
 
 /**
  * Ordre d'aspiration
+ *
+ * @author  Siwaÿll <sanath.labs@gmail.com>
+ * @license CC by-nc http://creativecommons.org/licenses/by-nc/3.0/fr/
  */
 class Command
 {
+    /**
+     * Fonction appellée après l'aspiration
+     *
+     * @var callable
+     */
     private $callBack = null;
 
+    /**
+     * Configuration curl
+     *
+     * @var [] Un tableau spécifiant quelles options à fixer avec leurs valeurs.
+     * Les clés devraient être des constantes valides de curl_setopt()
+     * ou leur entier équivalent.
+     */
     private $curlOpt = [];
 
     public $write = false;
 
     /**
+     * Création d'un ordre d'aspiration
      *
      * @param string $url url à aspirer
      */
@@ -64,10 +80,10 @@ class Command
     /**
      * Ajoute une fonction qui sera chargée après l'aspiration
      *
-     * @param callable $callback
+     * @param callable $callback fonction de rappel
      *
      * @return self
-     * @throws Exception
+     * @throws Siwayll\Mollicute\Exception si le callback est invalide
      */
     public function setCallBack($callback)
     {
@@ -92,7 +108,7 @@ class Command
     /**
      * Indique si une fonction de callback est présente
      *
-     * @return boolean
+     * @return boolean Vrais si elle est présente
      */
     public function hasCallBack()
     {
@@ -102,5 +118,4 @@ class Command
 
         return false;
     }
-
 }

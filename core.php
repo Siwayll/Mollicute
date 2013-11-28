@@ -11,28 +11,37 @@ namespace Siwayll\Mollicute;
 use Siwayll\Mollicute\Exception;
 
 /**
- * Lancement d'une aspiration
+ * Mollicute
+ *
+ * @author  Siwaÿll <sanath.labs@gmail.com>
+ * @license CC by-nc http://creativecommons.org/licenses/by-nc/3.0/fr/
  */
 class Core
 {
     /**
+     * Liste des Command à exécuter
      *
-     * @var array
+     * @var \Siwayll\Mollicute\Command[]
      */
     private $plan = [];
 
     /**
+     * Création d'un plan d'aspiration Mollicute
      *
-     * @param Command $start première instruction
+     * @param \Siwayll\Mollicute\Command $start première instruction
      *
      * @return void
-     * @thro
      */
     public function __construct(Command $start)
     {
         $this->plan[] = $start;
     }
 
+    /**
+     * Lance l'éxécution de l'aspiration
+     *
+     * @return void
+     */
     public function run()
     {
         $curl = new \Libs\Curl();
@@ -69,14 +78,31 @@ class Core
         } while (!empty($this->plan));
     }
 
-    public function addToPlan(array $cmd)
+    /**
+     * Ajoute une liste de commandes au plan d'aspiration
+     *
+     * @param \Siwayll\Mollicute\Command[] $cmds Liste de Command
+     *
+     * @return self
+     */
+    public function addToPlan(array $cmds)
     {
-        $this->plan = array_merge($this->plan, $cmd);
+        $this->plan = array_merge($this->plan, $cmds);
+
+        return $this;
     }
 
+    /**
+     * Ajoute une commande au plan d'aspiration
+     *
+     * @param \Siwayll\Mollicute\Command $cmd Ordre d'aspiration à ajouter
+     *
+     * @return self
+     */
     public function add(Command $cmd)
     {
         $this->plan[] = $cmd;
+
+        return $this;
     }
 }
-
