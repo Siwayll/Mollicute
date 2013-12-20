@@ -34,7 +34,20 @@ class Command
      */
     private $curlOpt = [];
 
-    public $write = false;
+    private static $plugins = [];
+
+    /**
+     * Ajoute un plugin
+     *
+     * @param string $name nom de la classe du plugin
+     *
+     * @return void
+     */
+    final public static function addPugin($name)
+    {
+        $className = $name . '\\CommandPlug';
+        self::$plugins[] = $className;
+    }
 
     /**
      * Création d'un ordre d'aspiration
@@ -44,6 +57,12 @@ class Command
     public function __construct($url = null)
     {
         $this->url = $url;
+
+        foreach (self::$plugins as $plugin) {
+            foreach ($plugin::getVars() as $varName => $defaultValue) {
+                $this->$varName = $defaultValue;
+            }
+        }
     }
 
     /**
@@ -67,14 +86,23 @@ class Command
     }
 
     /**
-     * Passe en mode écriture
+     * Appel des fonctions des plugins
      *
-     * @return self
+     * @param string $name Nom de la fonction
+     * @param mixed  $args Paramètres
+     *
+     * @return mixed
+     * @throws Exception
      */
-    public function write()
+    public function __call($name, $args)
     {
-        $this->write = true;
-        return $this;
+        foreach (self::$plugins as $plugin) {
+            if (is_callable([$plugin, $name])) {
+                return $plugin::$name($this, $args);
+            }
+        }
+
+        throw new Exception('Aucune fonction à ce nom');
     }
 
     /**

@@ -28,13 +28,40 @@ class Core
     /**
      * Création d'un plan d'aspiration Mollicute
      *
-     * @param \Siwayll\Mollicute\Command $start première instruction
-     *
      * @return void
      */
-    public function __construct(Command $start)
+    public function __construct()
     {
-        $this->plan[] = $start;
+
+    }
+
+    /**
+     * Ajout d'un plugin
+     *
+     * @param string $name namespace du plugin
+     *
+     * @return self
+     */
+    public function addPlugin($name)
+    {
+        Command::addPugin($name);
+
+        $coreName = $name . '\Core';
+        $this->plugins[] = new $coreName;
+        return $this;
+    }
+
+    /**
+     * Initialisation du plan
+     *
+     * @param \Siwayll\Mollicute\Command $start Première aspiration
+     *
+     * @return self
+     */
+    public function startWith(Command $start)
+    {
+        $this->plan = [$start];
+        return $this;
     }
 
     /**
@@ -62,11 +89,8 @@ class Core
                 );
             }
 
-            // @todo mettre en place une gestion des fichiers
-            if ($this->curCmd->write === true) {
-                $fileName = '/var/www/furyCell/tests/'
-                          . md5($this->curCmd->getUrl()) . '.html';
-                file_put_contents($fileName, $content);
+            foreach ($this->plugins as $plugin) {
+                $plugin->after($this->curCmd, $content);
             }
 
             if (is_array($return)) {
