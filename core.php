@@ -8,8 +8,6 @@
 
 namespace Siwayll\Mollicute;
 
-use Siwayll\Mollicute\Exception;
-
 /**
  * Mollicute
  *
@@ -24,6 +22,20 @@ class Core
      * @var \Siwayll\Mollicute\Command[]
      */
     private $plan = [];
+
+    /**
+     * Commande courante
+     *
+     * @var \Siwayll\Mollicute\Command
+     */
+    private $curCmd;
+
+    /**
+     * Résultat de l'aspiration de la commande
+     *
+     * @var string
+     */
+    private $curContent;
 
     /**
      * Création d'un plan d'aspiration Mollicute
@@ -78,28 +90,40 @@ class Core
             // Paramétrage curl
             $curl->setOpt($this->curCmd->getCurlOpts());
             // éxecution curl
-            $content = $curl->exec($this->curCmd->getUrl());
+            $this->curContent = $curl->exec($this->curCmd->getUrl());
             echo count($this->plan);
 
-            $return = null;
-            if ($this->curCmd->hasCallback()) {
-                $return = call_user_func(
-                    $this->curCmd->getCallback(),
-                    $content
-                );
-            }
+            $this->exec('CallBack');
 
             foreach ($this->plugins as $plugin) {
-                $plugin->after($this->curCmd, $content);
-            }
-
-            if (is_array($return)) {
-                $this->addToPlan($return);
-            }
-            if (is_a($return, '\\Tarlag\\Mollicute\\Command')) {
-                $this->add($return);
+                $plugin->after($this->curCmd, $this->curContent);
             }
         } while (!empty($this->plan));
+    }
+
+    /**
+     * Exécution d'une callback
+     *
+     * @param string $stepName Nom de l'étape
+     *
+     * @return self
+     */
+    private function exec($stepName = 'CallBack')
+    {
+        $funcTestName = 'has' . $stepName;
+        if ($this->curCmd->$funcTestName() !== true) {
+            return $this;
+        }
+        unset($funcTestName);
+
+        $funcName = 'get' . $stepName;
+        foreach (call_user_func($this->curCmd->$funcName(), $this->curContent) as $cmd) {
+            if (is_a($cmd, '\\Siwayll\\Mollicute\\Command')) {
+                $this->add($cmd);
+            }
+        }
+
+        return $this;
     }
 
     /**
