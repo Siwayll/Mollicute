@@ -102,7 +102,7 @@ class Core
      */
     public function run()
     {
-        $curl = new \Libs\Curl();
+        $curl = new Curl();
 
         do {
             $this->curCmd = array_pop($this->plan);
