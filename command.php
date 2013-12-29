@@ -8,8 +8,6 @@
 
 namespace Siwayll\Mollicute;
 
-use Siwayll\Mollicute\Exception;
-
 /**
  * Ordre d'aspiration
  *
@@ -94,11 +92,16 @@ class Command
      * @return mixed
      * @throws Exception
      */
-    public function __call($name, $args)
+    public function __call($name, array $args)
     {
+        $params = [$this];
+        foreach ($args as $opt) {
+            $params[] = $opt;
+        }
         foreach (self::$plugins as $plugin) {
             if (is_callable([$plugin, $name])) {
-                return $plugin::$name($this, $args);
+
+                return call_user_func_array([$plugin, $name], $params);
             }
         }
 
@@ -111,7 +114,7 @@ class Command
      * @param callable $callback fonction de rappel
      *
      * @return self
-     * @throws Siwayll\Mollicute\Exception si le callback est invalide
+     * @throws Exception si le callback est invalide
      */
     public function setCallBack($callback)
     {
