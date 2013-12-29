@@ -39,8 +39,6 @@ class Core
 
     /**
      * Création d'un plan d'aspiration Mollicute
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -61,6 +59,27 @@ class Core
         $coreName = $name . '\Core';
         $this->plugins[] = new $coreName;
         return $this;
+    }
+
+    /**
+     * Appel des fonctions des plugins
+     *
+     * @param string $name Nom de la fonction
+     * @param mixed  $args Paramètres
+     *
+     * @return mixed
+     * @throws Exception
+     */
+    public function __call($name, array $args)
+    {
+        foreach ($this->plugins as $plugin) {
+            if (is_callable([$plugin, $name])) {
+                call_user_func_array([$plugin, $name], $args);
+                return $this;
+            }
+        }
+
+        throw new Exception('Aucune fonction à ce nom');
     }
 
     /**
