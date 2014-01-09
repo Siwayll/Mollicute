@@ -74,6 +74,19 @@ class Command
     }
 
     /**
+     * Modification de l'url
+     *
+     * @param string $newUrl Nouvelle url
+     *
+     * @return self
+     */
+    public function setUrl($newUrl)
+    {
+        $this->url = $newUrl;
+        return $this;
+    }
+
+    /**
      * Renvois les modifications de configuration à apporter à curl
      *
      * @return array
@@ -105,7 +118,7 @@ class Command
             }
         }
 
-        throw new Exception('Aucune fonction à ce nom');
+        throw new Exception('Aucune fonction à ce nom : ' . $name);
     }
 
     /**
