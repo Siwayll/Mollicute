@@ -106,6 +106,15 @@ class Core
 
         do {
             $this->curCmd = array_pop($this->plan);
+            try {
+                foreach ($this->plugins as $plugin) {
+                    if (method_exists($plugin, 'before')) {
+                        $plugin->before($this->curCmd, $this);
+                    }
+                }
+            } catch (\Siwayll\Mollicute\Abort $exc) {
+                continue;
+            }
             // Paramétrage curl
             $curl->setOpt($this->curCmd->getCurlOpts());
             // éxecution curl
@@ -115,7 +124,9 @@ class Core
             $this->exec('CallBack');
 
             foreach ($this->plugins as $plugin) {
-                $plugin->after($this->curCmd, $this->curContent);
+                if (method_exists($plugin, 'after')) {
+                    $plugin->after($this->curCmd, $this->curContent, $this);
+                }
             }
         } while (!empty($this->plan));
     }
