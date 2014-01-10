@@ -10,6 +10,8 @@
 
 namespace Siwayll\Mollicute;
 
+use Siwayll\Deuton\Display;
+
 /**
  * Aspiration via Curl
  *
@@ -42,12 +44,7 @@ class Curl
      */
     public function setOpt(array $opts)
     {
-        foreach ($opts as $key => $value) {
-            if (!is_int($key)) {
-                $key = constant($key);
-            }
-            curl_setopt($this->curl, $key, $value);
-        }
+        curl_setopt_array($this->curl, $opts);
     }
 
     /**
@@ -61,14 +58,14 @@ class Curl
     {
         curl_setopt($this->curl, CURLOPT_URL, $url);
         $line = '{.c:blue}  curl{.reset}  ' . $url . ' ';
-        \Deuton\Display::write($line);
+        Display::write($line);
         $content = curl_exec($this->curl);
         if (curl_error($this->curl) === '') {
             $line = '{.c:green}ok{.reset}';
         } else {
             $line = '{.c:red}' . curl_error($this->curl) . '{.reset}';
         }
-        \Deuton\Display::line($line);
+        Display::line($line);
         return $content;
     }
 }

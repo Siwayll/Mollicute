@@ -105,6 +105,7 @@ class Core
         $curl = new Curl();
 
         do {
+            $this->curContent = null;
             $this->curCmd = array_pop($this->plan);
             try {
                 foreach ($this->plugins as $plugin) {
@@ -115,8 +116,11 @@ class Core
             } catch (\Siwayll\Mollicute\Abort $exc) {
                 continue;
             }
+            $this->exec('CallPre');
+
             // Paramétrage curl
             $curl->setOpt($this->curCmd->getCurlOpts());
+
             // éxecution curl
             $this->curContent = $curl->exec($this->curCmd->getUrl());
             echo count($this->plan);
@@ -147,7 +151,7 @@ class Core
         unset($funcTestName);
 
         $funcName = 'get' . $stepName;
-        foreach (call_user_func($this->curCmd->$funcName(), $this->curContent) as $cmd) {
+        foreach (call_user_func($this->curCmd->$funcName(), $this->curContent, $this->curCmd) as $cmd) {
             if (is_a($cmd, '\\Siwayll\\Mollicute\\Command')) {
                 $this->add($cmd);
             }

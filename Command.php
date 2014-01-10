@@ -24,6 +24,13 @@ class Command
     private $callBack = null;
 
     /**
+     * Fonction appellée avant l'aspiration
+     *
+     * @var callable
+     */
+    private $callPre = null;
+
+    /**
      * Configuration curl
      *
      * @var [] Un tableau spécifiant quelles options à fixer avec leurs valeurs.
@@ -97,6 +104,17 @@ class Command
     }
 
     /**
+     * @param string $code
+     * @param string $value
+     */
+    public function setCurlOpt($code, $value)
+    {
+        $this->curlOpt[$code] = $value;
+
+        return $this;
+    }
+
+    /**
      * Appel des fonctions des plugins
      *
      * @param string $name Nom de la fonction
@@ -119,6 +137,20 @@ class Command
         }
 
         throw new Exception('Aucune fonction à ce nom : ' . $name);
+    }
+
+    /**
+     * Indique si une fonction de callback est présente
+     *
+     * @return boolean Vrais si elle est présente
+     */
+    public function hasCallBack()
+    {
+        if (!empty($this->callBack)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -154,12 +186,40 @@ class Command
      *
      * @return boolean Vrais si elle est présente
      */
-    public function hasCallBack()
+    public function hasCallPre()
     {
-        if (!empty($this->callBack)) {
+        if (!empty($this->callPre)) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Ajoute une fonction qui sera chargée avant l'aspiration
+     *
+     * @param callable $callback fonction de rappel
+     *
+     * @return self
+     * @throws Exception si le callback est invalide
+     */
+    public function setCallPre($callback)
+    {
+        if (!is_callable($callback)) {
+            throw new Exception('Callback invalide');
+        }
+        $this->callPre = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Renvois la fonction de callback
+     *
+     * @return callable
+     */
+    public function getCallPre()
+    {
+        return $this->callPre;
     }
 }
