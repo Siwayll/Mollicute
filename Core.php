@@ -107,6 +107,7 @@ class Core
         do {
             $this->curContent = null;
             $this->curCmd = array_pop($this->plan);
+            echo count($this->plan);
             try {
                 foreach ($this->plugins as $plugin) {
                     if (method_exists($plugin, 'before')) {
@@ -123,7 +124,6 @@ class Core
 
             // éxecution curl
             $this->curContent = $curl->exec($this->curCmd->getUrl());
-            echo count($this->plan);
 
             $this->exec('CallBack');
 
@@ -131,6 +131,10 @@ class Core
                 if (method_exists($plugin, 'after')) {
                     $plugin->after($this->curCmd, $this->curContent, $this);
                 }
+            }
+
+            if ($this->curCmd->getSleep() !== false) {
+                sleep($this->curCmd->getSleep());
             }
         } while (!empty($this->plan));
     }

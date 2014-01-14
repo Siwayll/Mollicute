@@ -31,6 +31,13 @@ class Command
     private $callPre = null;
 
     /**
+     * Temps de pause après une aspiration
+     *
+     * @var boolean|int
+     */
+    protected $sleep = false;
+
+    /**
      * Configuration curl
      *
      * @var [] Un tableau spécifiant quelles options à fixer avec leurs valeurs.
@@ -158,7 +165,7 @@ class Command
      *
      * @param callable $callback fonction de rappel
      *
-     * @return self
+     * @return Command
      * @throws Exception si le callback est invalide
      */
     public function setCallBack($callback)
@@ -221,5 +228,29 @@ class Command
     public function getCallPre()
     {
         return $this->callPre;
+    }
+
+    /**
+     * Parametrage du temps de pause après l'aspiration
+     *
+     * @param int $time temps en seconde
+     *
+     * @return self
+     */
+    public function setSleep($time)
+    {
+        $this->sleep = $time;
+
+        return $this;
+    }
+
+    /**
+     * Renvois le temps de pause à appliquer après l'aspiration
+     *
+     * @return boolean|int
+     */
+    public function getSleep()
+    {
+        return $this->sleep;
     }
 }
