@@ -230,6 +230,49 @@ class Command
         return $this->callPre;
     }
 
+/**
+     * Indique si une fonction de callback est présente
+     *
+     * @return boolean Vrais si elle est présente
+     */
+    public function hasCallAfterPlug()
+    {
+        if (!empty($this->callAfterPlug)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Ajoute une fonction qui sera chargée après le chargement des plugins
+     * après l'aspiration
+     *
+     * @param callable $callback fonction de rappel
+     *
+     * @return Command
+     * @throws Exception si le callback est invalide
+     */
+    public function setCallAfterPlug($callback)
+    {
+        if (!is_callable($callback)) {
+            throw new Exception('Callback invalide');
+        }
+        $this->callAfterPlug = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Renvois la fonction de callback
+     *
+     * @return callable
+     */
+    public function getCallAfterPlug()
+    {
+        return $this->callAfterPlug;
+    }
+
     /**
      * Parametrage du temps de pause après l'aspiration
      *

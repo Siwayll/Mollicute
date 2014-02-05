@@ -8,6 +8,8 @@
 
 namespace Siwayll\Mollicute;
 
+use Siwayll\Deuton\Display;
+
 /**
  * Mollicute
  *
@@ -107,7 +109,8 @@ class Core
         do {
             $this->curContent = null;
             $this->curCmd = array_pop($this->plan);
-            echo count($this->plan);
+            $line = '{.c:blue} count{.reset}  ' . count($this->plan) . ' ';
+            Display::line($line);
             try {
                 foreach ($this->plugins as $plugin) {
                     if (method_exists($plugin, 'before')) {
@@ -132,6 +135,8 @@ class Core
                     $plugin->after($this->curCmd, $this->curContent, $this);
                 }
             }
+
+            $this->exec('CallAfterPlug');
 
             if ($this->curCmd->getSleep() !== false) {
                 sleep($this->curCmd->getSleep());
