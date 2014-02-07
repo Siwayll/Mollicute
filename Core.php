@@ -8,7 +8,10 @@
 
 namespace Siwayll\Mollicute;
 
+require_once __DIR__ . '/vendor/autoload.php';
+
 use Siwayll\Deuton\Display;
+use Monolog\Logger;
 
 /**
  * Mollicute
@@ -40,11 +43,32 @@ class Core
     private $curContent;
 
     /**
+     * Systeme de log monolog
+     *
+     * @var Logger
+     */
+    private $log;
+
+    /**
      * Création d'un plan d'aspiration Mollicute
      */
     public function __construct()
     {
+        $this->log = new Logger('name');
+        $this->log->pushHandler(new \Monolog\Handler\NullHandler());
+    }
 
+    /**
+     * Paramétrage du log
+     *
+     * @param \Monolog\Handler\StreamHandler $stream
+     *
+     * @return self
+     */
+    public function setLogHandler(StreamHandler $stream)
+    {
+        $this->log->pushHandler($stream);
+        return $this;
     }
 
     /**
@@ -106,6 +130,8 @@ class Core
     {
         $curl = new Curl();
 
+        $curl->setLogger($this->log);
+
         do {
             $this->curContent = null;
             $this->curCmd = array_pop($this->plan);
@@ -118,6 +144,7 @@ class Core
                     }
                 }
             } catch (\Siwayll\Mollicute\Abort $exc) {
+                $this->log->addNotice('Annulation ordre', [$this->curCmd, $exc]);
                 continue;
             }
             $this->exec('CallPre');

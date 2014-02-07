@@ -11,6 +11,7 @@
 namespace Siwayll\Mollicute;
 
 use Siwayll\Deuton\Display;
+use Monolog\Logger;
 
 /**
  * Aspiration via Curl
@@ -22,8 +23,18 @@ use Siwayll\Deuton\Display;
  */
 class Curl
 {
+    /**
+     * Curl
+     *
+     * @var ressource
+     */
     private $curl = null;
 
+    /**
+     *
+     * @var Logger
+     */
+    private $log;
 
     /**
      * Initialisation d'une nouvelle connexion Curl
@@ -40,11 +51,26 @@ class Curl
      *
      * @param array $opts Parametrages sous la forme __Option Curl__ => __value__
      *
-     * @return void
+     * @return self
      */
     public function setOpt(array $opts)
     {
         curl_setopt_array($this->curl, $opts);
+
+        return $this;
+    }
+
+    /**
+     *
+     * @param \Monolog\Logger $logger
+     *
+     * @return self
+     */
+    public function setLogger(Logger $logger)
+    {
+        $this->log = $logger;
+
+        return $this;
     }
 
     /**
@@ -63,6 +89,7 @@ class Curl
         if (curl_error($this->curl) === '') {
             $line = '{.c:green}ok{.reset}';
         } else {
+            $this->log->addWarning('Erreur aspiration');
             $line = '{.c:red}' . curl_error($this->curl) . '{.reset}';
         }
         Display::line($line);
