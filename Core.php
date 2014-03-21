@@ -54,20 +54,18 @@ class Core
      */
     public function __construct()
     {
-        $this->log = new Logger('name');
-        $this->log->pushHandler(new \Monolog\Handler\NullHandler());
     }
 
     /**
      * Paramétrage du log
      *
-     * @param \Monolog\Handler\StreamHandler $stream
+     * @param Logger $logger système de log
      *
      * @return self
      */
-    public function setLogHandler(StreamHandler $stream)
+    public function setLogger(Logger $logger)
     {
-        $this->log->pushHandler($stream);
+        $this->log = $logger;
         return $this;
     }
 
@@ -130,11 +128,15 @@ class Core
     {
         $curl = new Curl();
 
+        if (empty($this->log)) {
+            throw new Exception('Un logger est nécessaire');
+        }
         $curl->setLogger($this->log);
 
         do {
             $this->curContent = null;
             $this->curCmd = array_pop($this->plan);
+            $this->log->addDebug('hit', [$this->curCmd]);
             $line = '{.c:blue} count{.reset}  ' . count($this->plan) . ' ';
             Display::line($line);
             try {
@@ -144,7 +146,10 @@ class Core
                     }
                 }
             } catch (\Siwayll\Mollicute\Abort $exc) {
-                $this->log->addNotice('Annulation ordre', [$this->curCmd, $exc]);
+                $this->log->addNotice(
+                    'Annulation ordre',
+                    [$this->curCmd, $exc]
+                );
                 continue;
             }
             $this->exec('CallPre');
