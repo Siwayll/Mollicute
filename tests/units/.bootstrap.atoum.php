@@ -9,16 +9,7 @@ More information on documentation:
 [en] http://docs.atoum.org/en/chapter3.html#Bootstrap-file
 [fr] http://docs.atoum.org/fr/chapter3.html#Fichier-de-bootstrap
 */
+define('DS', DIRECTORY_SEPARATOR);
+require __DIR__ . '/../../../../vendor/autoload.php';
 
-/*
-AUTOLOADER
-
-// composer
-require __DIR__ . '/vendor/autoload.php';
- */
-require __DIR__ . '/../../Autoload.php';
-
-$autoload = new Siwayll\Helion\Autoload();
-
-$autoload->packagePush('Siwayll\Helion', __DIR__ . '/../../');
-spl_autoload_register([$autoload, 'search']);
+Siwayll\Deuton\Deuton::prepare();
