@@ -111,6 +111,23 @@ class Command
     }
 
     /**
+     * Renvois la valeur de l'option CURL demandée
+     *
+     * @param string $name valeur CURL
+     *
+     * @return mixed
+     * @throws Exception si l'option demandée n'a pas été configurée
+     */
+    public function getCurlOpt($name)
+    {
+        if (!isset($this->curlOpt[$name])) {
+            throw new Exception('Aucun attribut curl du nom de __' . $name . '__');
+        }
+
+        return $this->curlOpt[$name];
+    }
+
+    /**
      * @param string $code
      * @param string $value
      */
