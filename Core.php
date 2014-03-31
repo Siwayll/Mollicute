@@ -98,7 +98,16 @@ class Core
     {
         foreach ($this->plugins as $plugin) {
             if (is_callable([$plugin, $name])) {
-                call_user_func_array([$plugin, $name], $args);
+                $return = call_user_func_array([$plugin, $name], $args);
+                if (
+                    $return !== null
+                    && (
+                        is_object($return)
+                        && get_class($return) !== get_class($plugin)
+                    )
+                ) {
+                    return $return;
+                }
                 return $this;
             }
         }
