@@ -49,6 +49,13 @@ class Command
     private static $plugins = [];
 
     /**
+     * Données suplémentaires
+     *
+     * @var array
+     */
+    private $data = [];
+
+    /**
      * Ajoute un plugin
      *
      * @param string $name nom de la classe du plugin
@@ -75,6 +82,34 @@ class Command
                 $this->$varName = $defaultValue;
             }
         }
+    }
+
+    /**
+     * Stock une information supplémentaire
+     *
+     * L'information n'aura aucun impacte sur le paramétrage
+     *
+     * @param string $name nom de l'information
+     * @param mixed  $data information à stocker
+     *
+     * @return self
+     */
+    public function set($name, $data)
+    {
+        $this->data[$name] = $data;
+        return $this;
+    }
+
+    /**
+     * Récupère la valeur de l'informations stockée
+     *
+     * @param string $name nom de l'information
+     *
+     * @return mixed
+     */
+    public function get($name)
+    {
+        return $this->data[$name];
     }
 
     /**
