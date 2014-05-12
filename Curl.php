@@ -89,7 +89,7 @@ class Curl
         if (curl_error($this->curl) === '') {
             $line = '{.c:green}ok{.reset}';
         } else {
-            $this->log->addWarning('Erreur aspiration');
+            $this->log->addWarning('Erreur aspiration : ' . curl_error($this->curl));
             $line = '{.c:red}' . curl_error($this->curl) . '{.reset}';
         }
         Display::line($line);
