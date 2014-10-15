@@ -8,8 +8,6 @@
 
 namespace Siwayll\Mollicute;
 
-require_once __DIR__ . '/vendor/autoload.php';
-
 use Siwayll\Deuton\Display;
 use Monolog\Logger;
 
