@@ -142,7 +142,6 @@ class Core
         do {
             $this->curContent = null;
             $this->curCmd = array_pop($this->plan);
-            $this->log->addDebug('hit', [$this->curCmd]);
             try {
                 foreach ($this->plugins as $plugin) {
                     if (method_exists($plugin, 'before')) {

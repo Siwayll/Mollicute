@@ -219,11 +219,11 @@ class Curl
         }
         $this->setOpt(CURLOPT_URL, $url);
 
-        $this->log->addDebug('curl', [$url]);
+        $this->log->addDebug('hit on ' . $url, [$headers]);
         $content = curl_exec($this->curl);
 
         if (curl_error($this->curl) !== '') {
-            $this->log->addWarning('Erreur aspiration : ' . curl_error($this->curl));
+            $this->log->addWarning('Error ' . curl_error($this->curl));
         }
 
         $this->infoHit = curl_getinfo($this->curl);
