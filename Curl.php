@@ -211,7 +211,7 @@ class Curl
         foreach ($this->finalOpt as $option => $value) {
             $this->setOpt($option, $value);
         }
-        $this->setOpt(CURLOPT_URL, $url)
+        $this->setOpt(CURLOPT_URL, $url);
 
         $line = '{.c:blue}  curl{.reset}  ' . $url . ' ';
         Display::write($line);
