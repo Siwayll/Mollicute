@@ -41,6 +41,13 @@ class Curl
     private $log;
 
     /**
+     * Options non surchargeable
+     *
+     * @var array
+     */
+    protected $finalOpt = [];
+
+    /**
      * Initialisation d'une nouvelle connexion Curl
      */
     public function __construct()
@@ -95,13 +102,12 @@ class Curl
      * @param mixed $value  La valeur à définir pour option.
      *
      * @return \Curl
-     * @throws BotException lors de la redéfinition d'une opt finale.
+     * @throws Exception lors de la redéfinition d'une opt finale.
      */
     public function setFinalOpt($option, $value)
     {
         if (isset($this->finalOpt[$option])) {
-            $message = sprintf(CODE_ERROR_CURLMODIF, $option);
-            throw new BotException(CODE_ERROR_CURLMODIF, $this->infoHit);
+            throw new \Exception(CODE_ERROR_CURLMODIF, $this->infoHit);
         }
         $this->finalOpt[$option] = $value;
 
