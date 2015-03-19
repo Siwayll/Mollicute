@@ -1,25 +1,16 @@
 <?php
-/**
- * Aspiration via Curl
- *
- * @package    Libs
- * @subpackage Core
- * @author     Adrien <aimbert@solire.fr>
- * @license    Solire http://www.solire.fr/
- */
 
 namespace Siwayll\Mollicute;
 
 use Siwayll\Deuton\Display;
+use Siwayll\Mollicute\Curl\Header;
 use Monolog\Logger;
 
 /**
  * Aspiration via Curl
  *
- * @package    Libs
- * @subpackage Core
- * @author     Adrien <aimbert@solire.fr>
- * @license    Solire http://www.solire.fr/
+ * @author  Siwaÿll <sanath.labs@gmail.com>
+ * @license CC by-nc http://creativecommons.org/licenses/by-nc/3.0/fr/
  */
 class Curl
 {
@@ -36,6 +27,13 @@ class Curl
      * @var boolean
      */
     private $cookieCatch = false;
+
+    /**
+     * Header Curl
+     *
+     * @var Header
+     */
+    public $header;
 
     /**
      *
@@ -111,8 +109,9 @@ class Curl
     }
 
     /**
+     * Paramettrage du logger
      *
-     * @param \Monolog\Logger $logger
+     * @param \Monolog\Logger $logger Logger
      *
      * @return self
      */
@@ -153,13 +152,13 @@ class Curl
     /**
      * Récupère les cookies dans le header
      *
-     * @param string $content resultat de l'aspiration
+     * @param string $content Resultat de l'aspiration
      *
      * @return \Curl
      */
     public function parseCookie($content)
     {
-        if (!preg_match_all("#^Set-Cookie:\s*([^;]+)#mi", $content, $matchs)) {
+        if (!preg_match_all('#^Set-Cookie:\s*([^;]+)#mi', $content, $matchs)) {
             if (strpos($content, 'Set-Cookie') !== false) {
                 throw new Exception('Aucun cookie');
             }
@@ -202,10 +201,22 @@ class Curl
      */
     public function exec($url)
     {
-        curl_setopt($this->curl, CURLOPT_URL, $url);
+        // Application des headers
+        $headers = $this->header->getHeader();
+        if (!empty($headers)) {
+            $this->setOpt(CURLOPT_HTTPHEADER, $headers);
+        }
+
+        // chargement des options non modifiables
+        foreach ($this->finalOpt as $option => $value) {
+            $this->setOpt($option, $value);
+        }
+        $this->setOpt(CURLOPT_URL, $url)
+
         $line = '{.c:blue}  curl{.reset}  ' . $url . ' ';
         Display::write($line);
         $content = curl_exec($this->curl);
+
         if (curl_error($this->curl) === '') {
             $line = '{.c:green}ok{.reset}';
         } else {
@@ -213,6 +224,9 @@ class Curl
             $line = '{.c:red}' . curl_error($this->curl) . '{.reset}';
         }
         Display::line($line);
+
+        $this->infoHit = curl_getinfo($this->curl);
+
         return $content;
     }
 }
