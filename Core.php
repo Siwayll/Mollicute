@@ -162,7 +162,7 @@ class Core
             $this->exec('CallPre');
 
             // Paramétrage curl
-            $curl->setOpt($this->curCmd->getCurlOpts());
+            $curl->setOpts($this->curCmd->getCurlOpts());
 
             // éxecution curl
             $this->curContent = $curl->exec($this->curCmd->getUrl());

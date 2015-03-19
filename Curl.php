@@ -51,12 +51,35 @@ class Curl
      *
      * @param array $opts Parametrages sous la forme __Option Curl__ => __value__
      *
-     * @return self
+     * @return void
+     * @uses \Curl::setOpt application de la configuration
      */
-    public function setOpt(array $opts)
+    public function setOpts(array $opts)
     {
-        curl_setopt_array($this->curl, $opts);
+        foreach ($opts as $key => $value) {
+            if (!is_int($key)) {
+                $key = constant($key);
+            }
+            $this->setOpt($key, $value);
+        }
 
+        return $this;
+    }
+
+    /**
+     * Paramètre l'aspiration curl
+     *
+     * Chaque option est enregistrée dans le tableau $options
+     *
+     * @param int    $key   L'option CURLOPT_XXX à définir.
+     * @param string $value Valeur de l'option
+     *
+     * @return \Curl
+     */
+    public function setOpt($key, $value)
+    {
+        $this->options[$key] = $value;
+        curl_setopt($this->curl, $key, $value);
         return $this;
     }
 
