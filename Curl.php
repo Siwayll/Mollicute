@@ -31,6 +31,13 @@ class Curl
     private $curl = null;
 
     /**
+     * Récupération des cookies
+     *
+     * @var boolean
+     */
+    private $cookieCatch = false;
+
+    /**
      *
      * @var Logger
      */
@@ -94,6 +101,76 @@ class Curl
         $this->log = $logger;
 
         return $this;
+    }
+
+    /**
+     * Active la récupération des cookies
+     * ATTENTION cela nécéssite d'afficher le header dans le fichier
+     *
+     * @return self
+     */
+    public function catchCookies()
+    {
+        $this->cookieCatch = true;
+        $this->setOpt(CURLOPT_HEADER, true);
+
+        return $this;
+    }
+
+    /**
+     * Annule la récupération des cookies
+     *
+     * @return self
+     */
+    public function catchCookiesStop()
+    {
+        $this->cookieCatch = false;
+        $this->setOpt(CURLOPT_HEADER, false);
+
+        return $this;
+    }
+
+    /**
+     * Récupère les cookies dans le header
+     *
+     * @param string $content resultat de l'aspiration
+     *
+     * @return \Curl
+     */
+    public function parseCookie($content)
+    {
+        if (!preg_match_all("#^Set-Cookie:\s*([^;]+)#mi", $content, $matchs)) {
+            if (strpos($content, 'Set-Cookie') !== false) {
+                throw new Exception('Aucun cookie');
+            }
+            $this->cookies = [];
+            return;
+        }
+
+        $trashCookie = implode('&', $matchs[1]);
+        parse_str($trashCookie, $this->cookies);
+
+        return $this;
+    }
+
+    /**
+     * Renvois le tableau des cookies
+     *
+     * @return []
+     */
+    public function getCookies()
+    {
+        return $this->cookies;
+    }
+
+    /**
+     * Renvois la ressource Curl
+     *
+     * @return type
+     */
+    public function get()
+    {
+        return $this->curl;
     }
 
     /**
