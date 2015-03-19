@@ -91,6 +91,26 @@ class Curl
     }
 
     /**
+     * Paramètre l'aspiration curl qui ne peut être surchargé.
+     *
+     * @param int   $option L'option CURLOPT_XXX à définir.
+     * @param mixed $value  La valeur à définir pour option.
+     *
+     * @return \Curl
+     * @throws BotException lors de la redéfinition d'une opt finale.
+     */
+    public function setFinalOpt($option, $value)
+    {
+        if (isset($this->finalOpt[$option])) {
+            $message = sprintf(CODE_ERROR_CURLMODIF, $option);
+            throw new BotException(CODE_ERROR_CURLMODIF, $this->infoHit);
+        }
+        $this->finalOpt[$option] = $value;
+
+        return $this;
+    }
+
+    /**
      *
      * @param \Monolog\Logger $logger
      *
