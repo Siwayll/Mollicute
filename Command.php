@@ -58,7 +58,7 @@ class Command
     /**
      * Ajoute un plugin
      *
-     * @param string $name nom de la classe du plugin
+     * @param string $name Nom de la classe du plugin
      *
      * @return void
      */
@@ -71,7 +71,7 @@ class Command
     /**
      * Création d'un ordre d'aspiration
      *
-     * @param string $url url à aspirer
+     * @param string $url Url à aspirer
      */
     public function __construct($url = null)
     {
@@ -89,8 +89,8 @@ class Command
      *
      * L'information n'aura aucun impacte sur le paramétrage
      *
-     * @param string $name nom de l'information
-     * @param mixed  $data information à stocker
+     * @param string $name Nom de l'information
+     * @param mixed  $data Information à stocker
      *
      * @return self
      */
@@ -103,7 +103,7 @@ class Command
     /**
      * Récupère la valeur de l'informations stockée
      *
-     * @param string $name nom de l'information
+     * @param string $name Nom de l'information
      *
      * @return mixed
      */
@@ -148,7 +148,7 @@ class Command
     /**
      * Renvois la valeur de l'option CURL demandée
      *
-     * @param string $name valeur CURL
+     * @param string $name Valeur CURL
      *
      * @return mixed
      * @throws Exception si l'option demandée n'a pas été configurée
@@ -163,8 +163,13 @@ class Command
     }
 
     /**
-     * @param string $code
-     * @param string $value
+     * Configuration de curl
+     *
+     * @param string $code  Constante CURLOPT
+     * @param string $value Valeur de la configuration
+     *
+     * @return self
+     * @deprecated
      */
     public function setCurlOpt($code, $value)
     {
@@ -215,7 +220,7 @@ class Command
     /**
      * Ajoute une fonction qui sera chargée après l'aspiration
      *
-     * @param callable $callback fonction de rappel
+     * @param callable $callback Fonction de rappel
      *
      * @return Command
      * @throws Exception si le callback est invalide
@@ -257,7 +262,7 @@ class Command
     /**
      * Ajoute une fonction qui sera chargée avant l'aspiration
      *
-     * @param callable $callback fonction de rappel
+     * @param callable $callback Fonction de rappel
      *
      * @return self
      * @throws Exception si le callback est invalide
@@ -300,7 +305,7 @@ class Command
      * Ajoute une fonction qui sera chargée après le chargement des plugins
      * après l'aspiration
      *
-     * @param callable $callback fonction de rappel
+     * @param callable $callback Fonction de rappel
      *
      * @return Command
      * @throws Exception si le callback est invalide
@@ -328,7 +333,7 @@ class Command
     /**
      * Parametrage du temps de pause après l'aspiration
      *
-     * @param int $time temps en seconde
+     * @param int $time Temps en seconde
      *
      * @return self
      */

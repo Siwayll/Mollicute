@@ -57,7 +57,7 @@ class Core
     /**
      * Paramétrage du log
      *
-     * @param Logger $logger système de log
+     * @param Logger $logger Système de log
      *
      * @return self
      */
@@ -70,7 +70,7 @@ class Core
     /**
      * Ajout d'un plugin
      *
-     * @param string $name namespace du plugin
+     * @param string $name Namespace du plugin
      *
      * @return self
      */
