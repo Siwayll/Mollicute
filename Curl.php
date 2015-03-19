@@ -2,7 +2,6 @@
 
 namespace Siwayll\Mollicute;
 
-use Siwayll\Deuton\Display;
 use Siwayll\Mollicute\Curl\Header;
 use Monolog\Logger;
 
@@ -213,17 +212,12 @@ class Curl
         }
         $this->setOpt(CURLOPT_URL, $url);
 
-        $line = '{.c:blue}  curl{.reset}  ' . $url . ' ';
-        Display::write($line);
+        $this->log->addDebug('curl', [$url]);
         $content = curl_exec($this->curl);
 
-        if (curl_error($this->curl) === '') {
-            $line = '{.c:green}ok{.reset}';
-        } else {
+        if (curl_error($this->curl) !== '') {
             $this->log->addWarning('Erreur aspiration : ' . curl_error($this->curl));
-            $line = '{.c:red}' . curl_error($this->curl) . '{.reset}';
         }
-        Display::line($line);
 
         $this->infoHit = curl_getinfo($this->curl);
 

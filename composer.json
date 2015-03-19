@@ -17,8 +17,7 @@
   },
   "require": {
     "php": ">5.5.0",
-    "siwayll/deuton": ">=4.1.1",
-    "monolog/monolog": "1.7.0"
+    "monolog/monolog": "1.*"
   },
   "autoload": {
     "psr-4": {

@@ -8,7 +8,6 @@
 
 namespace Siwayll\Mollicute;
 
-use Siwayll\Deuton\Display;
 use Monolog\Logger;
 
 /**
@@ -144,8 +143,6 @@ class Core
             $this->curContent = null;
             $this->curCmd = array_pop($this->plan);
             $this->log->addDebug('hit', [$this->curCmd]);
-            $line = '{.c:blue} count{.reset}  ' . count($this->plan) . ' ';
-            Display::line($line);
             try {
                 foreach ($this->plugins as $plugin) {
                     if (method_exists($plugin, 'before')) {
