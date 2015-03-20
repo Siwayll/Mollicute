@@ -48,6 +48,13 @@ class Curl
     protected $finalOpt = [];
 
     /**
+     * Options
+     *
+     * @var array
+     */
+    protected $options = [];
+
+    /**
      * Initialisation d'une nouvelle connexion Curl
      */
     public function __construct()
@@ -93,6 +100,26 @@ class Curl
         $this->options[$key] = $value;
         curl_setopt($this->curl, $key, $value);
         return $this;
+    }
+
+    /**
+     * Retourne le paramétrage curl
+     *
+     * @param int $key Option CURLOPT_XXX
+     *
+     * @return null|mixed
+     */
+    public function getOpt($key)
+    {
+        if (isset($this->finalOpt[$key])) {
+            return $this->finalOpt[$key];
+        }
+
+        if (isset($this->options[$key])) {
+            return $this->options[$key];
+        }
+
+        return null;
     }
 
     /**
