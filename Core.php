@@ -47,10 +47,27 @@ class Core
     private $log;
 
     /**
+     *
+     * @var Curl
+     */
+    protected $curl;
+
+    /**
      * Création d'un plan d'aspiration Mollicute
      */
     public function __construct()
     {
+        $this->curl = new Curl();
+    }
+
+    /**
+     * Retourne l'objet Curl utilisé
+     *
+     * @return Curl
+     */
+    public function getCurl()
+    {
+        return $this->curl;
     }
 
     /**
@@ -132,12 +149,16 @@ class Core
      */
     public function run()
     {
-        $curl = new Curl();
-
         if (empty($this->log)) {
             throw new Exception('Un logger est nécessaire');
         }
-        $curl->setLogger($this->log);
+        $this->curl->setLogger($this->log);
+
+        foreach ($this->plugins as $plugin) {
+            if (method_exists($plugin, 'init')) {
+                $plugin->init($this);
+            }
+        }
 
         do {
             $this->curContent = null;
@@ -158,10 +179,10 @@ class Core
             $this->exec('CallPre');
 
             // Paramétrage curl
-            $curl->setOpts($this->curCmd->getCurlOpts());
+            $this->curl->setOpts($this->curCmd->getCurlOpts());
 
             // éxecution curl
-            $this->curContent = $curl->exec($this->curCmd->getUrl());
+            $this->curContent = $this->curl->exec($this->curCmd->getUrl());
 
             $this->exec('CallBack');
 
