@@ -252,4 +252,14 @@ class Core
 
         return $this;
     }
+
+    /**
+     * Retourne le nombre d'éléments présent dans le plan d'aspiration
+     *
+     * @return int
+     */
+    public function countPlan()
+    {
+        return count($this->plan);
+    }
 }
