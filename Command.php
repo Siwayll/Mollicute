@@ -113,6 +113,32 @@ class Command
     }
 
     /**
+     * Export des informations stockées
+     *
+     * @return array
+     */
+    public function export()
+    {
+        return $this->data;
+    }
+
+    /**
+     * Récupération rapide d'un tableau d'informations
+     *
+     * @param array $data Tableau associatif de données
+     *
+     * @return self
+     */
+    public function import(array $data)
+    {
+        foreach ($data as $name => $value) {
+            $this->set($name, $value);
+        }
+
+        return $this;
+    }
+
+    /**
      * Renvois l'url à aspirer
      *
      * @return string
