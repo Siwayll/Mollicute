@@ -195,7 +195,6 @@ class Command
      * @param string $value Valeur de la configuration
      *
      * @return self
-     * @deprecated
      */
     public function setCurlOpt($code, $value)
     {
