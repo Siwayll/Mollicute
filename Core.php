@@ -194,8 +194,21 @@ class Core
 
             $this->exec('CallAfterPlug');
 
+            // temporisation
             if ($this->curCmd->getSleep() !== false) {
-                sleep($this->curCmd->getSleep());
+                $progress = null;
+                foreach ($this->plugins as $plugin) {
+                    if (method_exists($plugin, 'getTickSleep')) {
+                        $progress = $plugin->getTickSleep();
+                        break;
+                    }
+                }
+                for ($i = $this->curCmd->getSleep(); $i > 0; $i--) {
+                    if (is_callable($progress)) {
+                        $progress($i);
+                    }
+                    sleep(1);
+                }
             }
         } while (!empty($this->plan));
     }
