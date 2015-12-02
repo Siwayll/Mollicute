@@ -9,6 +9,7 @@
 namespace Siwayll\Mollicute;
 
 use Monolog\Logger;
+use Siwayll\Mollicute\Abort;
 
 /**
  * Mollicute
@@ -51,6 +52,13 @@ class Core
      * @var Curl
      */
     protected $curl;
+
+    /**
+     * Chemin vers le fichier de sauvegarde du plan
+     *
+     * @var string
+     */
+    private $savePath;
 
     /**
      * Création d'un plan d'aspiration Mollicute
@@ -143,9 +151,57 @@ class Core
     }
 
     /**
+     * Récupération d'un plan sauvegardé
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function recovery()
+    {
+        if (empty($this->savePath)) {
+            throw new \Exception('Aucune reprise possible');
+        }
+
+        $data = file_get_contents($this->savePath);
+        $this->plan = unserialize($data);
+
+        return $this;
+    }
+
+    /**
+     * Enregistre le chemin du fichier de sauvegarde
+     *
+     * @param string $path Chemin vers le fichier de sauvegarde
+     *
+     * @return $this
+     */
+    public function setSavePath($path)
+    {
+        $this->savePath = $path;
+        return $this;
+    }
+
+    /**
+     * Arrêt de l'aspiration
+     *
+     * @return self
+     */
+    public function stop()
+    {
+        if (!empty($this->savePath)) {
+            $data = serialize($this->plan);
+            file_put_contents($this->savePath, $data);
+            unset($data);
+        }
+
+        return $this;
+    }
+
+    /**
      * Lance l'éxécution de l'aspiration
      *
      * @return void
+     * @throws
      */
     public function run()
     {
@@ -163,20 +219,13 @@ class Core
         do {
             $this->curContent = null;
             $this->curCmd = array_pop($this->plan);
+
             try {
-                foreach ($this->plugins as $plugin) {
-                    if (method_exists($plugin, 'before')) {
-                        $plugin->before($this->curCmd, $this);
-                    }
-                }
-            } catch (\Siwayll\Mollicute\Abort $exc) {
-                $this->log->addNotice(
-                    'Annulation ordre',
-                    [$this->curCmd, $exc]
-                );
+                $this->execPlugin('before');
+                $this->exec('CallPre');
+            } catch (Abort $exc) {
                 continue;
             }
-            $this->exec('CallPre');
 
             // Paramétrage curl
             $this->curl->setOpts($this->curCmd->getCurlOpts());
@@ -185,13 +234,7 @@ class Core
             $this->curContent = $this->curl->exec($this->curCmd->getUrl());
 
             $this->exec('CallBack');
-
-            foreach ($this->plugins as $plugin) {
-                if (method_exists($plugin, 'after')) {
-                    $plugin->after($this->curCmd, $this->curContent, $this);
-                }
-            }
-
+            $this->execPlugin('after');
             $this->exec('CallAfterPlug');
 
             // temporisation
@@ -219,6 +262,8 @@ class Core
      * @param string $stepName Nom de l'étape
      *
      * @return self
+     * @throws Exception Des plugins
+     * @throws Stop      Lors d'une demande d'arret de l'aspiration
      */
     private function exec($stepName = 'CallBack')
     {
@@ -229,10 +274,47 @@ class Core
         unset($funcTestName);
 
         $funcName = 'get' . $stepName;
-        foreach (call_user_func($this->curCmd->$funcName(), $this->curContent, $this->curCmd) as $cmd) {
-            if (is_a($cmd, '\\Siwayll\\Mollicute\\Command')) {
-                $this->add($cmd);
+        try {
+            foreach (call_user_func($this->curCmd->$funcName(), $this->curContent, $this->curCmd) as $cmd) {
+                if (is_a($cmd, '\\Siwayll\\Mollicute\\Command')) {
+                    $this->add($cmd);
+                }
             }
+        } catch (Stop $exc) {
+            $this->stop();
+            throw $exc;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Execution d'un plugin
+     *
+     * @param string $name Nom de l'étape
+     *
+     * @return self
+     * @throws Exception Des plugins
+     * @throws Stop      Lors d'une demande d'arret de l'aspiration
+     * @throws Abort     Pour une annulation de l'ordre d'aspi courant
+     */
+    private function execPlugin($name)
+    {
+        try {
+            foreach ($this->plugins as $plugin) {
+                if (method_exists($plugin, $name)) {
+                    $plugin->$name($this->curCmd, $this);
+                }
+            }
+        } catch (Abort $exc) {
+            $this->log->addNotice(
+                'Annulation ordre',
+                [$this->curCmd, $exc]
+            );
+            throw $exc;
+        } catch (Stop $exc) {
+            $this->stop();
+            throw $exc;
         }
 
         return $this;
