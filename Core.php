@@ -237,23 +237,31 @@ class Core
             $this->execPlugin('after');
             $this->exec('CallAfterPlug');
 
-            // temporisation
-            if ($this->curCmd->getSleep() !== false) {
-                $progress = null;
-                foreach ($this->plugins as $plugin) {
-                    if (method_exists($plugin, 'getTickSleep')) {
-                        $progress = $plugin->getTickSleep();
-                        break;
-                    }
-                }
-                for ($i = $this->curCmd->getSleep(); $i > 0; $i--) {
-                    if (is_callable($progress)) {
-                        $progress($i);
-                    }
-                    sleep(1);
-                }
-            }
+            $this->sleep();
         } while (!empty($this->plan));
+    }
+
+    /**
+     * Temporisation
+     */
+    private function sleep()
+    {
+        if ($this->curCmd->getSleep() === false) {
+            return;
+        }
+        $progress = null;
+        foreach ($this->plugins as $plugin) {
+            if (method_exists($plugin, 'getTickSleep')) {
+                $progress = $plugin->getTickSleep();
+                break;
+            }
+        }
+        for ($i = $this->curCmd->getSleep(); $i > 0; $i--) {
+            if (is_callable($progress)) {
+                $progress($i);
+            }
+            sleep(1);
+        }
     }
 
     /**
