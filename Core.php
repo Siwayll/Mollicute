@@ -210,11 +210,7 @@ class Core
         }
         $this->curl->setLogger($this->log);
 
-        foreach ($this->plugins as $plugin) {
-            if (method_exists($plugin, 'init')) {
-                $plugin->init($this);
-            }
-        }
+        $this->execPlugin('init');
 
         do {
             $this->curContent = null;
