@@ -129,7 +129,7 @@ class Curl
      * @param mixed $value  La valeur à définir pour option.
      *
      * @return \Curl
-     * @throws Exception lors de la redéfinition d'une opt finale.
+     * @throws \Exception lors de la redéfinition d'une opt finale.
      */
     public function setFinalOpt($option, $value)
     {
@@ -188,6 +188,7 @@ class Curl
      * @param string $content Resultat de l'aspiration
      *
      * @return \Curl
+     * @throws \Exception si aucun cookie n'est détecté
      */
     public function parseCookie($content)
     {
