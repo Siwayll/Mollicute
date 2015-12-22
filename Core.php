@@ -217,8 +217,8 @@ class Core
             $this->curCmd = array_pop($this->plan);
 
             try {
-                $this->execPlugin('before');
-                $this->exec('CallPre');
+                $this->execPlugin('before', $this->curCmd);
+                $this->exec('CallPre', $this->curCmd);
             } catch (Abort $exc) {
                 continue;
             }
@@ -229,20 +229,22 @@ class Core
             // éxecution curl
             $this->curContent = $this->curl->exec($this->curCmd->getUrl());
 
-            $this->exec('CallBack');
-            $this->execPlugin('after');
-            $this->exec('CallAfterPlug');
+            $this->exec('CallBack', $this->curCmd);
+            $this->execPlugin('after', $this->curCmd);
+            $this->exec('CallAfterPlug', $this->curCmd);
 
-            $this->sleep();
+            $this->sleep($this->curCmd);
         } while (!empty($this->plan));
     }
 
     /**
      * Temporisation
+     *
+     * @param Command $command Command courante
      */
-    private function sleep()
+    private function sleep(Command $command)
     {
-        if ($this->curCmd->getSleep() === false) {
+        if ($command->getSleep() === false) {
             return;
         }
         $progress = null;
@@ -252,7 +254,7 @@ class Core
                 break;
             }
         }
-        for ($i = $this->curCmd->getSleep(); $i > 0; $i--) {
+        for ($i = $command->getSleep(); $i > 0; $i--) {
             if (is_callable($progress)) {
                 $progress($i);
             }
@@ -263,23 +265,24 @@ class Core
     /**
      * Exécution d'une callback
      *
-     * @param string $stepName Nom de l'étape
+     * @param string  $stepName Nom de l'étape
+     * @param Command $command  Command courante
      *
      * @return self
      * @throws Exception Des plugins
      * @throws Stop      Lors d'une demande d'arret de l'aspiration
      */
-    private function exec($stepName = 'CallBack')
+    private function exec($stepName = 'CallBack', Command $command)
     {
         $funcTestName = 'has' . $stepName;
-        if ($this->curCmd->$funcTestName() !== true) {
+        if ($command->$funcTestName() !== true) {
             return $this;
         }
         unset($funcTestName);
 
         $funcName = 'get' . $stepName;
         try {
-            foreach (call_user_func($this->curCmd->$funcName(), $this->curContent, $this->curCmd) as $cmd) {
+            foreach (call_user_func($command->$funcName(), $this->curContent, $command) as $cmd) {
                 if (is_a($cmd, '\\Siwayll\\Mollicute\\Command')) {
                     $this->add($cmd);
                 }
@@ -295,25 +298,26 @@ class Core
     /**
      * Execution d'un plugin
      *
-     * @param string $name Nom de l'étape
+     * @param string  $name    Nom de l'étape
+     * @param Command $command Command courante
      *
      * @return self
      * @throws Exception Des plugins
      * @throws Stop      Lors d'une demande d'arret de l'aspiration
      * @throws Abort     Pour une annulation de l'ordre d'aspi courant
      */
-    private function execPlugin($name)
+    private function execPlugin($name, Command $command)
     {
         try {
             foreach ($this->plugins as $plugin) {
                 if (method_exists($plugin, $name)) {
-                    $plugin->$name($this->curCmd, $this);
+                    $plugin->$name($command, $this->curContent, $this);
                 }
             }
         } catch (Abort $exc) {
             $this->log->addNotice(
                 'Annulation ordre',
-                [$this->curCmd, $exc]
+                [$command, $exc]
             );
             throw $exc;
         } catch (Stop $exc) {
