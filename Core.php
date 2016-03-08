@@ -306,7 +306,7 @@ class Core
      * @throws Stop      Lors d'une demande d'arret de l'aspiration
      * @throws Abort     Pour une annulation de l'ordre d'aspi courant
      */
-    private function execPlugin($name, Command $command)
+    private function execPlugin($name, Command $command = null)
     {
         try {
             foreach ($this->plugins as $plugin) {
