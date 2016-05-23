@@ -7,6 +7,7 @@
  */
 
 namespace Siwayll\Mollicute;
+use Siwayll\Mollicute\Curl\Post;
 
 /**
  * Ordre d'aspiration
@@ -199,6 +200,23 @@ class Command
     public function setCurlOpt($code, $value)
     {
         $this->curlOpt[$code] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Ajoute des données en post à curl
+     *
+     * @param Post $post Données à ajouter
+     *
+     * @return $this
+     */
+    public function addCurlPost(Post $post)
+    {
+        $this
+            ->setCurlOpt(CURLOPT_POST, true)
+            ->setCurlOpt(CURLOPT_POSTFIELDS, $post->send())
+        ;
 
         return $this;
     }
