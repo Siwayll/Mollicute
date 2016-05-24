@@ -247,6 +247,28 @@ class Command
     }
 
     /**
+     * Vérifie si la méthode existe
+     *
+     * @param string $name Nom de la méthode
+     *
+     * @return bool
+     */
+    public function hasMethod($name)
+    {
+        if (method_exists($this, $name)) {
+            return true;
+        }
+
+        foreach (self::$plugins as $plugin) {
+            if (is_callable([$plugin, $name])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Indique si une fonction de callback est présente
      *
      * @return boolean Vrais si elle est présente
