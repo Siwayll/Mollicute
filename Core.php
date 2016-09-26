@@ -337,7 +337,9 @@ class Core
      */
     public function addToPlan(array $cmds)
     {
-        $this->plan = array_merge($this->plan, $cmds);
+        foreach ($cmds as $cmd) {
+            $this->add($cmd);
+        }
 
         return $this;
     }
